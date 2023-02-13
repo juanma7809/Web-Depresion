@@ -79,4 +79,3 @@ class Video(object):
 
 a = Video()
 a.sensurar_video("C:/Users/home/Desktop/webDepresion/webDepresion/video/k.mp4")
-22
