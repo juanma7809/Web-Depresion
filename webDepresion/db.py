@@ -4,7 +4,7 @@ MYSQL = DATABASES = {
         'NAME': 'web_depresion',
         'USER': 'root',
         'PASSWORD': '',
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
     }
 }
