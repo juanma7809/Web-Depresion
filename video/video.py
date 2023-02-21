@@ -1,5 +1,6 @@
 import cv2 
 
+
 class Video(object):
 
     def __init__(self,):
