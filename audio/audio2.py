@@ -1,6 +1,5 @@
 import librosa
 import numpy as np
-import pydub
 import os
 
 class Audio(object):
@@ -10,7 +9,7 @@ class Audio(object):
 
     def separar_voces(self):
         # Cargar el archivo de audio
-        archivo_audio = os.path.dirname(os.path.realpath('prueba.mp3'))
+        archivo_audio = os.path.abspath("prueba4.mp3")
         audio, sr = librosa.load(archivo_audio)
 
         # Extraer características de audio
@@ -40,6 +39,7 @@ class Audio(object):
 
         # Calcular los intervalos de tiempo en los que se detectó la segunda persona
         umbral = 0.5  # umbral para considerar que un cluster corresponde a la segunda persona
+        inicio = 0
         intervalos_segunda_persona = []
         for i in range(1, len(etiquetas_clusters)):
             if etiquetas_clusters[i] == 1 and etiquetas_clusters[i-1] == 0:

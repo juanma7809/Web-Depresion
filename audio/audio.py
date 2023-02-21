@@ -11,7 +11,7 @@ class Audio(object):
 
     def separar_voces(self):
         # Cargar el archivo de audio
-        audio_file = pydub.AudioSegment.from_mp3(os.path.abspath('prueba.mp3'))
+        audio_file = pydub.AudioSegment.from_mp3(os.path.abspath('prueba3.mp3'))
 
         # Convertir a formato de matriz de numpy
         audio_array = np.array(audio_file.get_array_of_samples())
