@@ -6,7 +6,7 @@ import os
 class Audio(object):
 
     def __init__(self,):
-        self.ruta = "C:\\Users\\home\\Desktop\\Web-Depresion\\audio\\"
+        self.ruta = "/home/first_user/Web-Depresion/Web-Depresion/"
         pass
 
     def separar_voces(self):
