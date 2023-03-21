@@ -1,36 +1,63 @@
-import nltk
+import re
+import speech_recognition as sr
 
-# Descargar el paquete de datos requerido por NLTK
-nltk.download('punkt')
+# funcion para identificar conversaciones
+def find_conversations(audio_data):
+    conversations = []
+    r = sr.Recognizer()
+    try:
+        text = r.recognize_google(audio_data, language='es-ES')
+    except:
+        return []
+    pattern = re.compile(r"([A-Z]+):\s+(.*)")
+    lines = text.split('\n')
+    print("aqui")
+    if len(lines) == 1:
+        conversations.append(('Desconocido', lines[0], 0, audio_data.duration))
+        return conversations
+    speaker = ''
+    conversation = ''
+    offset_idx = 0
+    offsets = audio_data.offset
+    for line in lines:
+        match = pattern.match(line)
+        if match:
+            if speaker and conversation:
+                start_time = offsets[offset_idx][0]
+                end_time = offsets[offset_idx][1]
+                conversations.append((speaker, conversation, start_time, end_time))
+                offset_idx += 1
+            speaker = match.group(1)
+            conversation = match.group(2)
+        else:
+            conversation += ' ' + line
+    if speaker and conversation:
+        start_time = offsets[offset_idx][0]
+        end_time = offsets[offset_idx][1]
+        conversations.append((speaker, conversation, start_time, end_time))
+    return conversations
 
-# Cargar el archivo de texto que contiene la conversación
-with open('conversacion.txt', 'r') as f:
-    conversation = f.read()
+# funcion para guardar en archivo
+def save_conversations(conversations, filename):
+    with open(filename, 'w') as f:
+        for i, (speaker, conversation, start_time, end_time) in enumerate(conversations):
+            f.write(f"{i+1}\n{start_time:.2f} --> {end_time:.2f}\n{speaker}: {conversation}\n\n")
 
-# Tokenizar el texto en oraciones
-sentences = nltk.sent_tokenize(conversation)
 
-# Iterar sobre cada oración y determinar quién la dijo
-person1_sentences = []
-person2_sentences = []
+# archivo de entrada
+filename = "nueva/prub.0.wav"
 
-for sentence in sentences:
-    # Tokenizar la oración en palabras
-    words = nltk.word_tokenize(sentence)
-    
-    # Si la primera palabra de la oración es el nombre de la primera persona,
-    # se agrega la oración a la lista de oraciones de la primera persona.
-    if words[0] == 'Persona1':
-        person1_sentences.append(sentence)
-    # Si no, se agrega a la lista de oraciones de la segunda persona.
-    else:
-        person2_sentences.append(sentence)
+# leer archivo y reconocer texto con la librería SpeechRecognition
+r = sr.Recognizer()
+with sr.AudioFile('nueva/prub.0.wav') as source:
+    audio_data = r.record(source)
 
-# Imprimir las oraciones de cada persona
-print("Oraciones de la Persona 1:")
-for sentence in person1_sentences:
-    print(sentence)
+# encontrar conversaciones en el texto y guardar en archivo
+print("ANTES DE ENCONTRAR A LOS SUJETOS:")
+conversations = find_conversations(audio_data)
+print(conversations, "DESPUES")
+save_conversations(conversations, 'conversaciones.txt')
 
-print("Oraciones de la Persona 2:")
-for sentence in person2_sentences:
-    print(sentence)
+# imprimir conversaciones
+for speaker, conversation in conversations:
+    print(f"{speaker}: {conversation}")
